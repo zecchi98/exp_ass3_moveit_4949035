@@ -1,0 +1,6 @@
+string msg1
+string msg2
+---
+bool success
+int32[] data
+string response
