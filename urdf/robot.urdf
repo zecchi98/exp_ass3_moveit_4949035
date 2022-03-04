@@ -74,8 +74,8 @@
             <legacyMode>true</legacyMode>
             <alwaysOn>true</alwaysOn>
             <updateRate>20</updateRate>
-            <leftJoint>joint_left_wheel</leftJoint>
-            <rightJoint>joint_right_wheel</rightJoint>
+            <leftJoint>joint_right_wheel</leftJoint>
+            <rightJoint>joint_left_wheel</rightJoint>
             <wheelSeparation>0.3</wheelSeparation>
             <wheelDiameter>0.2</wheelDiameter>
             <torque>0.1</torque>
@@ -258,7 +258,7 @@
         </collision>
     </link>
     <joint name="joint_laser" type="fixed">
-        <origin rpy="0 0 0" xyz="0.3 0 0.05" />
+        <origin rpy="0 0 0" xyz="0.3 0 1" />
         <parent link="base_link" />
         <child link="laser" />
     </joint>
@@ -651,7 +651,6 @@
         <box size="0.05 0.05 0.05"/>
       </geometry>
     </collision>
-
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
@@ -659,14 +658,12 @@
       </geometry>
       <material name="orange"/>
     </visual>
-
     <inertial> 
       <origin xyz="0 0 0" rpy="0 0 0"/> 
       <mass value="0.1"/> 
       <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
     </inertial>
   </link>
-
 	 <joint name="camera_depth_joint" type="fixed">
     <origin xyz="0 0 0" rpy="-1.57 0 -1.57 "/>
     <parent link="camera_link"/>
@@ -675,31 +672,6 @@
   
   
   
-
-  <gazebo>
-    <plugin filename="libgazebo_ros_diff_drive.so" name="differential_drive_controller">
-      <legacyMode>true</legacyMode>
-      <alwaysOn>true</alwaysOn>
-      <updateRate>1000</updateRate>
-      <leftJoint>joint_left_wheel</leftJoint>
-      <rightJoint>joint_right_wheel</rightJoint>
-      <wheelSeparation>0.2</wheelSeparation>
-      <wheelDiameter>0.2</wheelDiameter>
-      <torque>0.1</torque>
-      <commandTopic>cmd_vel</commandTopic>
-      <odometryTopic>odom</odometryTopic>
-      <odometryFrame>odom</odometryFrame>
-      <robotBaseFrame>base_link</robotBaseFrame>
-    </plugin>
-  </gazebo>
-  
-  <!-- ros_control plugin -->
-  <gazebo>
-    <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
-     <!-- <robotNamespace>/robot</robotNamespace> -->
-      <legacyModeNS>true</legacyModeNS>
-    </plugin>
-  </gazebo>
 
    <!-- hokuyo -->
 <gazebo reference="camera_link">

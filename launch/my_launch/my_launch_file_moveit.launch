@@ -72,6 +72,7 @@
     <arg name="paused" value="$(arg paused)"/>
     <arg name="gazebo_gui" value="$(arg gazebo_gui)"/>
     <arg name="urdf_path" value="$(arg urdf_path)"/>
+    <arg name="gui" value="$(arg gui)" />
   </include>
 
 
@@ -104,18 +105,6 @@
 
   	
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find exp_ass3_moveit_4949035)/config/sim.rviz" /> 
-  
-  
-	<include file="$(find planning)/launch/gmapping.launch"></include>
-	
-    <arg name="des_x" default= "2.5"/>
-    <arg name="des_y" default= "-2.0"/>
-    <param name="des_pos_x" value="$(arg des_x)" />
-    <param name="des_pos_y" value="$(arg des_y)" />
-    
-    <include file="$(find planning)/launch/move_base.launch"></include>
-  
-  
   
 	
   <node name="final_oracle" pkg="exp_assignment3" type="final_oracle" />
