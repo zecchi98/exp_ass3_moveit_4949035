@@ -8,7 +8,8 @@ find_package(catkin REQUIRED COMPONENTS
   visualization_msgs
   gazebo_msgs
   message_generation
-  #OpenCV
+  sensor_msgs
+  OpenCV
 )
  add_message_files(
    FILES
@@ -29,9 +30,11 @@ find_package(catkin REQUIRED COMPONENTS
  )
  find_package (OpenCV REQUIRED)
 catkin_package(
-#DEPENDS OpenCV
+DEPENDS OpenCV
 )
 
+
+add_library(time STATIC IMPORTED)
 
 include_directories(
 include

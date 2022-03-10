@@ -10,6 +10,7 @@ from math import cos, pi, sin
 from os import access
 from re import X
 
+import actionlib
 import geometry_msgs.msg
 import moveit_commander
 import moveit_msgs.msg
@@ -22,9 +23,11 @@ from moveit_commander.robot import RobotCommander
 from std_msgs.msg import String
 from tf.transformations import euler_from_quaternion, quaternion_from_euler
 from exp_ass3_moveit_4949035.srv import *
-
-
-  
+from move_base_msgs.msg import MoveBaseAction, MoveBaseActionGoal,MoveBaseGoal
+from nav_msgs.msg import Odometry
+x_pos_array=[-4.0,-4,-4,5.0,5.0,5.0]
+y_pos_array=[-3.0,7,2,-7,-3.0,1.0]
+id_location=0
 flagMiddlePanelCreated=False
 bool_exit=False
 class Transformation_class():
@@ -273,7 +276,7 @@ class Move_group_class(object):
     move_group.go(joints_vet, wait=True)
 
     # Calling ``stop()`` ensures that there is no residual movement
-    move_group.stop()
+    #move_group.stop()
 
     ## END_SUB_TUTORIAL
 
@@ -1103,20 +1106,100 @@ def handle_joystick_input(input):
 def define_all_initial_functions():
     global movegroup_library,comunication_object,transformation_library,movimenti_base_library,aruco_library
     global joystick_verso_rotazione,joystick_angle_step,joystick_translation_step,bool_message_from_user
+    global pub_move_goal
 
     rospy.init_node('state_machine', anonymous=True)
+    s=rospy.Service('/move_arm',comunication,handle_move_arm_service)
+    pub_move_goal = rospy.Publisher('/move_base/goal', MoveBaseActionGoal, queue_size=1)
+    rospy.Subscriber('/odom',Odometry,odom_callback)
+    print("Service ready")
     movegroup_library = Move_group_class()
     transformation_library=Transformation_class()
     bool_exit=False
-    prova()
 
 def prova():
     nul=0
 
+    vect1=movegroup_library.get_joints_values()
+
+    vect2=movegroup_library.get_joints_values()
+
+
+    vect1[0]=transformation_library.grad_to_rad(170)
+    vect1[3]=transformation_library.grad_to_rad(-20)
+    vect2[0]=transformation_library.grad_to_rad(-170)
+    vect2[3]=transformation_library.grad_to_rad(-20)
+
+
+    movegroup_library.move_group.set_start_state_to_current_state
+    movegroup_library.go_to_joint_state(vect1)
+
+
+    movegroup_library.move_group.set_start_state_to_current_state
+    movegroup_library.go_to_joint_state(vect2)
+
+
+def odom_callback(data):
+    global x_actual,y_actual
+    x_actual=data.pose.pose.position.x
+    y_actual=data.pose.pose.position.y
+def wait_to_reach_goal(goal):
+    x_goal=goal.target_pose.pose.position.x
+    y_goal=goal.target_pose.pose.position.y
+    pos_reached=False
+    while(not (pos_reached)):
+        rospy.rostime.wallsleep(0.5)
+        diff=math.sqrt((x_goal-x_actual)*(x_goal-x_actual) + (y_goal-y_actual)*(y_goal-y_actual))
+        print(diff)
+        if(diff<=0.2):
+            pos_reached=True
+
+def move_to_next_location():
+    global id_location
+
+    client = actionlib.SimpleActionClient('move_base',MoveBaseAction)
+    client.wait_for_server()
+    goal = MoveBaseGoal()
+    goal.target_pose.header.frame_id = "odom"
+    goal.target_pose.header.stamp = rospy.Time.now()
+    goal.target_pose.pose.position.x = x_pos_array[id_location]
+    goal.target_pose.pose.position.y = y_pos_array[id_location]
+    goal.target_pose.pose.orientation.w = 1
+
+    client.send_goal(goal)
+    wait_to_reach_goal(goal)
+
+    print("complete")
+    id_location=id_location+1
+
+def look_around():
+    vect1=movegroup_library.get_joints_values()
+
+    vect2=movegroup_library.get_joints_values()
+
+
+    vect1[0]=transformation_library.grad_to_rad(178)
+    vect1[3]=transformation_library.grad_to_rad(-30)
+    vect2[0]=transformation_library.grad_to_rad(-178)
+    vect2[3]=transformation_library.grad_to_rad(-30)
+
+
+    movegroup_library.move_group.set_start_state_to_current_state
+    movegroup_library.go_to_joint_state(vect1)
+
+
+    movegroup_library.move_group.set_start_state_to_current_state
+    movegroup_library.go_to_joint_state(vect2)
+
+
+def state_machine():
+    look_around()
+    for i in range(0,6):
+        move_to_next_location()
+        look_around()
 def main():
   define_all_initial_functions()
-  s=rospy.Service('/move_arm',comunication,handle_move_arm_service)
-  print("Service ready")
+  state_machine()
   try:
     while (not rospy.core.is_shutdown()) and (not bool_exit):
         rospy.rostime.wallsleep(0.5)

@@ -63,7 +63,7 @@
 
   <!-- Gazebo specific options -->
   <!-- By default, use the urdf location provided from the package -->
-  <arg name="urdf_path" default="$(find exp_ass3_moveit_4949035)/urdf/robot.urdf"/>
+  <arg name="urdf_path" default="$(find robot_urdf)/urdf/robot6.urdf"/>
 
 
 
@@ -72,7 +72,7 @@
     <arg name="paused" value="$(arg paused)"/>
     <arg name="gazebo_gui" value="$(arg gazebo_gui)"/>
     <arg name="urdf_path" value="$(arg urdf_path)"/>
-    <arg name="gui" value="$(arg gui)" />
+    <arg name="gui" value="$(arg gui)"/>
   </include>
 
 
@@ -106,7 +106,9 @@
   	
   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find exp_ass3_moveit_4949035)/config/sim.rviz" /> 
   
+  
+  
 	
-  <node name="final_oracle" pkg="exp_assignment3" type="final_oracle" />
+  <node name="final_oracle" pkg="exp_assignment3" type="final_oracle" output="screen"/>
 
 </launch>
