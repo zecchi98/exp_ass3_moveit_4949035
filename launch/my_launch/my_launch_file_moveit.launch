@@ -63,7 +63,7 @@
 
   <!-- Gazebo specific options -->
   <!-- By default, use the urdf location provided from the package -->
-  <arg name="urdf_path" default="$(find robot_urdf)/urdf/robot6.urdf"/>
+  <arg name="urdf_path" default="$(find exp_ass3_moveit_4949035)/urdf/robot6.urdf"/>
 
 
 
