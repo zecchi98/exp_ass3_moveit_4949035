@@ -24,8 +24,8 @@ from tf.transformations import euler_from_quaternion, quaternion_from_euler
 from exp_ass3_moveit_4949035.srv import *
 from move_base_msgs.msg import MoveBaseAction, MoveBaseActionGoal,MoveBaseGoal
 from nav_msgs.msg import Odometry
-x_pos_array=[-4.0,-4,-4,5.0,5.0,5.0]
-y_pos_array=[-3.0,7,2,-7,-3.0,1.0]
+x_pos_array=[0,-4,-4,-4,5,5,5]
+y_pos_array=[0,-3,7,2,-7,-3,1]
 id_location=0
 flagMiddlePanelCreated=False
 bool_exit=False
@@ -564,6 +564,8 @@ def define_all_initial_functions():
     rospy.init_node('state_machine', anonymous=True)
     #From here we will read the location of our robot
     rospy.Subscriber('/odom',Odometry,odom_callback)
+    #Initialize victory rosparam
+    rospy.set_param("/victory",False)
     #initialize move_group_libray,transformation_library
     movegroup_library = Move_group_class()
     transformation_library=Transformation_class()
@@ -626,7 +628,7 @@ def move_to_next_location():
 
     #We update the id to the next one. In this way we are ready to go the following room
     id_location=id_location+1
-    print("complete")
+    print("I have just reached the desired location")
 def look_around():
     #\brief In this function without moving the chassis the robot will take a look around. This means it mainly rotate the first axis of at least 360 degrees.
 
@@ -647,14 +649,23 @@ def look_around():
 
 def state_machine():
     #\brief In this function we will loop until the end of the process. We will continue to look around and move
-
+    global victory
     #The camera will take a look around without moving the chassis at the very beginning
     look_around()
-
-    #Foreach room we move to it and take a look around
-    for i in range(0,6):
-        move_to_next_location()
-        look_around()
+    victory=False
+    while(not(victory)):
+      #Foreach room we move to it and take a look around
+      for i in range(0,7):
+          if not victory:
+            print("Going to room number "+str(i+1)+" of 7")
+            move_to_next_location()
+          
+          victory = rospy.get_param("/victory")
+          if(not victory):
+            look_around()
+          victory = rospy.get_param("/victory")
+    print("You WIN")
+      
 def main():
   #\brief This is the main function
 

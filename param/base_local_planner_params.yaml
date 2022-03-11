@@ -1,14 +1,14 @@
 TrajectoryPlannerROS:
 
 # Robot Configuration Parameters
-  max_vel_x: 2
+  max_vel_x: 1
   min_vel_x: 0.2
 
   max_vel_theta:  3
   min_vel_theta:  -3
   min_in_place_vel_theta: -1.0
   
-  acc_lim_x: 2
+  acc_lim_x: 1
   acc_lim_theta: 1
 
 # Goal Tolerance Parameters

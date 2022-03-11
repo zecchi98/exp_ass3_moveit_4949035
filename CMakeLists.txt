@@ -42,7 +42,7 @@ include
 )
 
 
-catkin_install_python(PROGRAMS scripts/robot_control.py scripts/ID_handler.py
+catkin_install_python(PROGRAMS scripts/robot_control.py scripts/my_opencv.py
 DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

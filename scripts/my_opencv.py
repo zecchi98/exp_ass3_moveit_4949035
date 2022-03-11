@@ -97,6 +97,7 @@ def check_victory(hint):
         if winner_id==hint.hypothesis_code :
             print("YOU WIN")
             bool_exit=True
+            rospy.set_param("/victory",True)
         else:
             print("Still not the winner id")
 def save_hint(response):
@@ -181,6 +182,8 @@ def callbackRaw(raw_img):
                 #Thanks to this line we will not check anymore that id
                 ids_found[id_trovato]=1
                 print("total aruco:"+str(total_aruco_found))
+                if total_aruco_found>20 :
+                  print(ids_found)
     else:
         detAruImg=cv_image.copy()#
 
@@ -198,7 +201,7 @@ def main():
     bridge=CvBridge()
 
     #From here we will keep track of the ids we have already analyzed
-    ids_found=np.zeros(100000)
+    ids_found=np.zeros(60)
 
     #Camera topics
     raw_topic="/camera/color/image_raw"
@@ -210,7 +213,8 @@ def main():
     rospy.Subscriber(raw_topic,sensImg,callbackRaw,queue_size = 1)
     #Client initialization (from here we will know which is the hint for a particular aruco)
     client_oracle=rospy.ServiceProxy('/oracle_hint',Marker)
-
+    #Initialize victory rosparam
+    rospy.set_param("/victory",False)
     ARUCO_PARAMETERS = aruco.DetectorParameters_create()
     ARUCO_DICT = aruco.Dictionary_get(aruco.DICT_ARUCO_ORIGINAL)
 
