@@ -9,7 +9,6 @@ from logging import setLoggerClass
 from math import cos, pi, sin
 from os import access
 from re import X
-
 import actionlib
 import geometry_msgs.msg
 import moveit_commander
@@ -30,12 +29,16 @@ y_pos_array=[-3.0,7,2,-7,-3.0,1.0]
 id_location=0
 flagMiddlePanelCreated=False
 bool_exit=False
-class Transformation_class():
+class Transformation_class():##
+#\class Transformation_class
+#\brief Only the grad_to_rad function has been used in this assignment
   def __init__(self):
         null=0
   def rad_to_grad(self,angle):
+    #\brief Convert from radiants to gradiants
     return angle*180/3.1415
   def grad_to_rad(self,angle):
+    #\brief Convert from gradiants to radiants
     return angle*3.1415/180
   def rot2eul(self,R):
     beta = -np.arcsin(R[2,0])
@@ -145,20 +148,9 @@ class Transformation_class():
     return pose
   def inverse_matrix(self,AffineMat):
     return np.linalg.inv(AffineMat)
-class Collision_Box():
-    def __init__(self):
-        self.box_pose = PoseStamped()
-        self.box_size = np.zeros(3)
-        self.box_name = String()  
-class Affine_valid():
-    def __init__(self):
-        self.is_valid = False
-        self.Affine_matrix = np.zeros((4,4))
-class Pose_valid():
-    def __init__(self):
-        self.is_valid = False
-        self.pose = Pose()
 class Move_group_class(object):
+  #\class Transformation_class
+  #\brief This function has been provided from moveit, i didn't modify it. Except inserting the name of the robot
   """Move_group_class"""
   def __init__(self):
     super(Move_group_class, self).__init__()
@@ -316,7 +308,6 @@ class Move_group_class(object):
     current_pose = self.move_group.get_current_pose().pose
     return self.all_close(pose_goal, current_pose, 0.01)
   def go_to_pose_cartesian(self,pose_goal):
-  
     move_group = self.move_group
 
     waypoints = []
@@ -565,651 +556,112 @@ class Move_group_class(object):
     print("\n\nActive joints:")
     print(self.move_group.get_active_joints())
     aruco_library.print_situation_aruco()
-class Comunication_class(object):
-  def __init__(self):
-    super(Comunication_class, self).__init__()
-    rospy.wait_for_service('cv_server')
-
-    self.bridge_service_information = rospy.ServiceProxy('cv_server', cv_server)
-  def call_bridge_service(self,first_information,second_information):
-    print("Deprecated")
-    return self.read_data_from_cv()
-    # try:
-    #       req=aruco_serviceRequest()
-    #       req.modality=first_information
-    #       req.second_information=second_information
-
-    #       msg = self.bridge_service_information(req)
-
-    #       resp=aruco_serviceResponse()
-    #       resp.x=msg.x
-    #       resp.y=msg.y
-    #       resp.z=msg.z
-    #       resp.all_aruco_found=msg.all_aruco_found
-    #       resp.aruco_found=msg.aruco_found
-    #       resp.dim=msg.dim
-    #       resp.finger_joint=msg.finger_joint
-    #       resp.id_aruco=msg.id_aruco
-    #       resp.moreTargets=msg.moreTargets
-    #       resp.vector=msg.vector
-
-    #       #self.print_bridge_response(resp)
-          
-    #       return resp
-    # except rospy.ServiceException as e:
-      #print("Service call failed: %s"%e)
-  def call_cv_service(self,first_information,second_information):
-    
-    try:
-          req=cv_serverRequest()
-          req.message=first_information
-          req.second_information=second_information
-
-          msg = self.bridge_service_information(req)
-
-    except rospy.ServiceException as e:
-      print("Service call failed: %s"%e)
-  def print_bridge_response(self,response):
-    
-    print("Aruco trovato:"+str(response.aruco_found))
-    print("ID Aruco:"+str(response.id_aruco))
-  def ask_matrix_camera_aruco(self):
-    ValidMatrix=Affine_valid()
-    msg=self.read_data_from_cv()
-    if not msg.aruco_found:
-      ValidMatrix.is_valid=False
-      return ValidMatrix
-    ValidMatrix.is_valid=True
-    translation_vet=[msg.x,msg.y,msg.z]
-    R=np.matrix([[msg.vector[0],msg.vector[1],msg.vector[2]],[msg.vector[3],msg.vector[4],msg.vector[5]],[msg.vector[6],msg.vector[7],msg.vector[8]]])
-    
-    AffineMat=transformation_library.create_affine_matrix_from_rotation_matrix_and_translation_vector(R,translation_vet)
-    ValidMatrix.Affine_matrix=AffineMat
-    return ValidMatrix
-  def read_data_from_cv(self):
-    try:
-      msg=rospy.wait_for_message("/aruco_bridge_opencv",cv_to_bridge)
-      resp=cv_to_bridge()
-      resp.aruco_found=msg.aruco_found
-      resp.pose_camera_aruco=msg.pose_camera_aruco
-      return resp
-    except:
-      print("error reading from cv")
-  def matrix_from_cv_of_specified_aruco(self,id_aruco):
-    data=self.read_data_from_cv()
-    ValidMatrix=Affine_valid()
-    if(data.aruco_found[int(id_aruco)]):
-      ValidMatrix.is_valid=True
-      ValidMatrix.Affine_matrix=transformation_library.from_pose_to_matrix(data.pose_camera_aruco[int(id_aruco)])
-    else:
-      ValidMatrix.is_valid=False
-    return ValidMatrix
-    
-      
-
-class Movimenti_base_class(object):
-  def __init__(self):
-      super(Movimenti_base_class, self).__init__()
-  def go_to_initial_position(self):
-    joint_vet=movegroup_library.move_group.get_active_joints()
-    joint_vet[0]=transformation_library.grad_to_rad(0)
-    joint_vet[1]=transformation_library.grad_to_rad(-120)
-    joint_vet[2]=transformation_library.grad_to_rad(100)
-    joint_vet[3]=transformation_library.grad_to_rad(20)
-    joint_vet[4]=transformation_library.grad_to_rad(90)
-    joint_vet[5]=transformation_library.grad_to_rad(90)
-    movegroup_library.go_to_joint_state(joint_vet)
-class Aruco_class():
-    def __init__(self):
-      self.Button_1=Pose_valid()
-      self.Button_2=Pose_valid()
-      self.Button_3=Pose_valid()
-      self.Button_4=Pose_valid()
-      self.Button_5=Pose_valid()
-      self.Button_6=Pose_valid()
-      self.Button_7=Pose_valid()
-      self.Button_8=Pose_valid()
-      self.Button_9=Pose_valid()
-      self.IMU_Module=Pose_valid()
-      self.IMU_Destination=Pose_valid()
-      self.Inspection_Window=Pose_valid()
-      self.Inspection_Window_Cover=Pose_valid()
-      self.Inspection_Window_Cover_Storage=Pose_valid()
-      self.number_of_aruco=14
-    def elaborate_number_of_aruco_found(self):
-      cont=0
-      for id in range(1,self.number_of_aruco+1):
-        id_str=str(id)
-        Aruco_valid=self.from_id_to_pose_valid_of_the_aruco(id_str)
-        if(Aruco_valid.is_valid):
-          cont=cont+1
-      return cont
-      """
-      if(self.Button_1.is_valid):
-        cont=cont+1
-      if(self.Button_2.is_valid):
-        cont=cont+1
-      if(self.Button_3.is_valid):
-        cont=cont+1
-      if(self.Button_4.is_valid):
-        cont=cont+1
-      if(self.Button_5.is_valid):
-        cont=cont+1
-      if(self.Button_6.is_valid):
-        cont=cont+1
-      if(self.Button_7.is_valid):
-        cont=cont+1
-      if(self.Button_8.is_valid):
-        cont=cont+1
-      if(self.Button_9.is_valid):
-        cont=cont+1
-      if(self.IMU_Module.is_valid):
-        cont=cont+1
-      if(self.IMU_Destination.is_valid):
-        cont=cont+1
-      if(self.Inspection_Window.is_valid):
-        cont=cont+1
-      if(self.Inspection_Window_Cover.is_valid):
-        cont=cont+1
-      if(self.Inspection_Window_Cover_Storage.is_valid):
-        cont=cont+1
-      """
-    def print_situation_aruco(self):
-      tot=self.elaborate_number_of_aruco_found()
-      print("\nTotal aruco found:"+str(tot))
-    def from_id_to_pose_valid_of_the_aruco(self,id):
-      #INPUT: id dell aruco in stringa(per esempio, il Button1 ha id="1")
-      #Output: Pose_valid classe, dove puoi controllare se l aruco e stato trovato e qual'e il suo valore
-      
-      if(id=="1"):
-        return self.Button_1
-      if(id=="2"):
-        return self.Button_2
-      if(id=="3"):
-        return self.Button_3
-      if(id=="4"):
-        return self.Button_4
-      if(id=="5"):
-        return self.Button_5
-      if(id=="6"):
-        return self.Button_6
-      if(id=="7"):
-        return self.Button_7
-      if(id=="8"):
-        return self.Button_8
-      if(id=="9"):
-        return self.Button_9
-      if(id=="10"):
-        return self.IMU_Module
-      if(id=="11"):
-        return self.IMU_Destination
-      if(id=="12"):
-        return self.Inspection_Window
-      if(id=="13"):
-        return self.Inspection_Window_Cover
-      if(id=="14"):
-        return self.Inspection_Window_Cover_Storage
-      print("NO aruco corresponds to your request")
-      return Pose_valid()
-    def set_new_aruco(self,id,pose_aruco):
-      
-
-      if(id=="1"):
-        self.Button_1.is_valid=True
-        self.Button_1.pose=pose_aruco
-      if(id=="2"):
-        self.Button_2.is_valid=True
-        self.Button_2.pose=pose_aruco
-      if(id=="3"):
-        self.Button_3.is_valid=True
-        self.Button_3.pose=pose_aruco
-      if(id=="4"):
-        self.Button_4.is_valid=True
-        self.Button_4.pose=pose_aruco
-      if(id=="5"):
-        self.Button_5.is_valid=True
-        self.Button_5.pose=pose_aruco
-      if(id=="6"):
-        self.Button_6.is_valid=True
-        self.Button_6.pose=pose_aruco
-      if(id=="7"):
-        self.Button_7.is_valid=True
-        self.Button_7.pose=pose_aruco
-      if(id=="8"):
-        self.Button_8.is_valid=True
-        self.Button_8.pose=pose_aruco
-      if(id=="9"):
-        self.Button_9.is_valid=True
-        self.Button_9.pose=pose_aruco
-      if(id=="10"):
-        self.IMU_Module.is_valid=True
-        self.IMU_Module.pose=pose_aruco
-      if(id=="11"):
-        self.IMU_Destination.is_valid=True
-        self.IMU_Destination.pose=pose_aruco
-      if(id=="12"):
-        self.Inspection_Window.is_valid=True
-        self.Inspection_Window.pose=pose_aruco
-      if(id=="13"):
-        self.Inspection_Window_Cover.is_valid=True
-        self.Inspection_Window_Cover.pose=pose_aruco
-      if(id=="14"):
-        self.Inspection_Window_Cover_Storage.is_valid=True
-        self.Inspection_Window_Cover_Storage.pose=pose_aruco
-    def cambia_id_aruco_selezionato(self,ID):
-      res=comunication_object.call_bridge_service("md_next_aruco",ID) 
-      for i in range(100):
-        time.sleep(0.1)
-        res=comunication_object.call_bridge_service("","")
-        if str(res.id_aruco)==ID:
-          return True
-          
-      return False
-    def is_aruco_visible_from_camera(self,ID):
-      #Restituisce se l'aruco e' attualmente visibile dalla camera
-      res=comunication_object.call_bridge_service("md_next_aruco",ID)
-      if str(res.id_aruco)==ID:
-        return res.aruco_found
-      else:
-        self.cambia_id_aruco_selezionato(ID)
-        res=comunication_object.call_bridge_service("md_next_aruco",ID)
-        return res.aruco_found
-    def elaborate_affine_matrix_of_visible_aruco(self,ID):
-      target=Pose_valid()
-      T_camera_gaz_aruco_valid=comunication_object.matrix_from_cv_of_specified_aruco(ID)
-      if not T_camera_gaz_aruco_valid.is_valid :
-        target.is_valid=False
-        #print("Non ho trovato nessun aruco")
-        return target
-
-      target.is_valid=True
-      T_camera_gaz_aruco=T_camera_gaz_aruco_valid.Affine_matrix
-
-      actual_pose=movegroup_library.move_group.get_current_pose().pose
-      T_0_tool=transformation_library.from_pose_to_matrix(actual_pose)
-      T_0_aruco=T_0_tool*T_tool_camera_gazebo*T_camera_gaz_aruco
-
-      target.pose=transformation_library.from_matrix_to_pose(T_0_aruco)  
-
-
-      return target
-    def salva_aruco_visibili_OOOLD(self):
-      nul=0
-      #   self.print_situation_aruco()
-
-      #   res=comunication_object.call_bridge_service("","")
-      #   for id in range(1,len(res.aruco_found)):
-
-      #     id_str=str(id)
-      #     if res.aruco_found[id]:#Controllo che l'aruco sia stato trovato
-            
-      #       collision_to_be_done=False
-      #       if not self.from_id_to_pose_valid_of_the_aruco(id_str).is_valid: #controllo se ho mai trovato questo aruco, in caso negativo aggiungo la collisione che ne deriva
-      #         collision_to_be_done=True
-  
-      #       aruco_valid=self.elaborate_affine_matrix_of_visible_aruco(id_str)#mi calcolo l'aruco
-      #       if aruco_valid.is_valid:#se ho trovato l'aruco
-      #         self.set_new_aruco(id_str,aruco_valid.pose)
-      #         print("Salvo aruco:"+id_str)
-
-      #         if collision_to_be_done:
-      #           self.add_collision_from_aruco(id_str)#aggiungo la collisione corrispondente
-    def save_visible_arucos(self):
-      self.print_situation_aruco()
-      for id in range(1,16):
-        id_str=str(id)
-        mat_valid=comunication_object.matrix_from_cv_of_specified_aruco(id)
-        if mat_valid.is_valid:
-          collision_to_be_done=False
-          if not self.from_id_to_pose_valid_of_the_aruco(id_str).is_valid: #controllo se ho mai trovato questo aruco, in caso negativo aggiungo la collisione che ne deriva
-            collision_to_be_done=True
- 
-          aruco_valid=self.elaborate_affine_matrix_of_visible_aruco(id_str)#mi calcolo l'aruco
-          if aruco_valid.is_valid:#se ho trovato l'aruco
-            self.set_new_aruco(id_str,aruco_valid.pose)
-            print("Salvo aruco:"+id_str)
-
-            if collision_to_be_done:
-              self.add_collision_from_aruco(id_str)#aggiungo la collisione corrispondente
-      print("Finish saving arucos")
-    def add_collision_from_aruco(self,ID):
-      global flagMiddlePanelCreated
-      if (ID=="2" or ID=="5" or ID=="8") and not(flagMiddlePanelCreated):
-        collision_box=Collision_Box()
-
-        if not aruco_library.from_id_to_pose_valid_of_the_aruco(ID).is_valid:
-          return False
-
-        flagMiddlePanelCreated=True
-        collision_box.box_name="middle_panel"
-
-        collision_box.box_size[0]=0.001
-        collision_box.box_size[1]=0.3
-        collision_box.box_size[2]=3*0.5
-        collision_box.box_pose.header.frame_id="base_link"
-
-        pose_orientation=transformation_library.from_euler_to_quaternion([0,0,0])
-        collision_box.box_pose.pose.orientation=pose_orientation.orientation
-        
-        collision_box.box_pose.pose.position.x=aruco_library.from_id_to_pose_valid_of_the_aruco(ID).pose.position.x+collision_box.box_size[0]/2
-        collision_box.box_pose.pose.position.y=aruco_library.from_id_to_pose_valid_of_the_aruco(ID).pose.position.y
-        collision_box.box_pose.pose.position.z=aruco_library.from_id_to_pose_valid_of_the_aruco(ID).pose.position.z
-        """
-        collision_boxes[box_name].name=box_name;
-        collision_boxes[box_name].pose=box_pose;
-        collision_boxes[box_name].size[0]=box_size[0];
-        collision_boxes[box_name].size[1]=box_size[1];
-        collision_boxes[box_name].size[2]=box_size[2];
-        """
-        movegroup_library.add_box(collision_box)
-      if (ID>="1" and ID<="9"):
-        coll_box=Collision_Box()
-        pose_aruco_valid=aruco_library.from_id_to_pose_valid_of_the_aruco(ID)
-
-        if not pose_aruco_valid.is_valid:    
-          return False
-
-        pose_0_aruco=pose_aruco_valid.pose
-        Rot=transformation_library.eul2rot([0,0,0])
-        T_aruco_finalpose=transformation_library.create_affine_matrix_from_rotation_matrix_and_translation_vector(Rot,[0,-0.055,0])
-        T_0_aruco=transformation_library.from_pose_to_matrix(pose_0_aruco)
-        T_0_finalpose=T_0_aruco.dot(T_aruco_finalpose)
-
-
-        pose_final=transformation_library.from_matrix_to_pose(T_0_finalpose)
-
-        coll_box.box_name="button_"+ID
-
-        coll_box.box_size[0]=0.023
-        coll_box.box_size[1]=0.04
-        coll_box.box_size[2]=0.04
-
-        coll_box.box_pose.header.frame_id="base_link"
-
-        pose_orient=transformation_library.from_euler_to_quaternion([0,0,0])
-        coll_box.box_pose.pose.orientation=pose_orient.orientation
-        
-        
-        coll_box.box_pose.pose.position.x=pose_final.position.x-coll_box.box_size[0]/2
-        coll_box.box_pose.pose.position.y=pose_final.position.y
-        coll_box.box_pose.pose.position.z=pose_final.position.z
-        
-        """
-        collision_boxes[box_name].name=box_name;
-        collision_boxes[box_name].pose=box_pose;
-        collision_boxes[box_name].size[0]=box_size[0];
-        collision_boxes[box_name].size[1]=box_size[1];
-        collision_boxes[box_name].size[2]=box_size[2];
-        """
-        movegroup_library.add_box(coll_box)
-      
-
-#Funzioni da finire
-def move_gripper(gripper_goal):
-  print("Per ora non esiste")
-
-def handle_move_arm_service(req):
-  print("Server request received")
-  nul=0
-  response=comunicationResponse()
-  print(req)
-
-    
-  
-  vect1=movegroup_library.get_joints_values()
-
-  vect2=movegroup_library.get_joints_values()
-
-
-  vect1[1]=transformation_library.grad_to_rad(-25)
-  vect1[2]=transformation_library.grad_to_rad(-17)
-  vect1[3]=transformation_library.grad_to_rad(32)
-
-  
-  vect2[1]=transformation_library.grad_to_rad(-17)
-  vect2[2]=transformation_library.grad_to_rad(-90)
-  vect2[3]=transformation_library.grad_to_rad(32)
-
-  if (req.msg1=="wp1"):
-    vect1[0]=transformation_library.grad_to_rad(77)
-    
-    vect2[0]=transformation_library.grad_to_rad(77)
-
-  if (req.msg1=="wp2"):
-    vect1[0]=transformation_library.grad_to_rad(107)
-    vect2[0]=transformation_library.grad_to_rad(107)
-    
-  if (req.msg1=="wp3"):
-    vect1[0]=transformation_library.grad_to_rad(84)
-    vect2[0]=transformation_library.grad_to_rad(84)
-  if (req.msg1=="wp4"):
-
-    vect1[0]=transformation_library.grad_to_rad(93)
-    vect2[0]=transformation_library.grad_to_rad(93)
-
-  movegroup_library.move_group.set_start_state_to_current_state
-  movegroup_library.go_to_joint_state(vect1)
-
-
-  movegroup_library.move_group.set_start_state_to_current_state
-  movegroup_library.go_to_joint_state(vect2)
-
-  response.response="ok"
-  response.success=True
-  response.data=[]
-  return response
-
-#std functions
-def callback_user_interface(msg):
-  global bool_message_from_user,msg_from_user
-  msg_from_user=UserInterfaceRequest()
-  msg_from_user.modality=msg.modality
-  msg_from_user.second_information=msg.second_information
-  msg_from_user.target_pose=msg.target_pose
-  msg_from_user.target_joints=msg.target_joints
-  bool_message_from_user=True
-  return UserInterfaceResponse()
-def handle_user_request():
-  global bool_message_from_user
-  bool_message_from_user=False
-  print("Msg received:"+msg_from_user.modality)
-  if msg_from_user.modality=="automazione_go_pos_iniziale":
-    movimenti_base_library.go_to_initial_position()
-  if msg_from_user.modality=="controlla_gripper":
-    move_gripper(msg_from_user.second_information)
-  if msg_from_user.modality=="joystick":
-    handle_joystick_input(msg_from_user.second_information)
-  if msg_from_user.modality=="Stampa_pose_robot":
-    movegroup_library.Stampa_Info_Robot()
-  if msg_from_user.modality=="stop_trajectory":
-    movegroup_library.FermaRobot()
-  if msg_from_user.modality=="salva_aruco":
-    aruco_library.save_visible_arucos()    
-  if msg_from_user.modality=="turn_on_off_camera":
-    comunication_object.call_cv_service("turn_on_off_camera","")
-def handle_joystick_input(input):
-  global joystick_verso_rotazione,joystick_translation_step,joystick_angle_step
-  #q w -> asse x
-  #a s -> asse y
-  #z x -> asse z
-  #o p -> rotazione asse x
-  #k l -> rotazione asse y
-  #n m -> rotazione asse z
-
-  #if bool_pose_move==True allora si dovra effettuare un movimento go_to_pose
-  #if bool_joint_move==True allora si dovra effettuare un movimento go_to_joint_state
-  
-  bool_pose_move=False
-  bool_joint_move=False
-  
-  actual_pose=movegroup_library.move_group.get_current_pose().pose
-  target_pose=actual_pose
-  actual_rpy_vet=transformation_library.rpy_from_quat(actual_pose.orientation)
-  target_rpy_vet=actual_rpy_vet
-
-  if(input=="q"):
-    target_pose.position.x=actual_pose.position.x+joystick_translation_step
-    bool_pose_move=True
-  if(input=="w"):
-    bool_pose_move=True
-    target_pose.position.x=actual_pose.position.x-joystick_translation_step
-  if(input=="a"):
-    bool_pose_move=True
-    target_pose.position.y=actual_pose.position.y+joystick_translation_step
-  if(input=="s"):
-    bool_pose_move=True
-    target_pose.position.y=actual_pose.position.y-joystick_translation_step
-  if(input=="z"):
-    bool_pose_move=True
-    target_pose.position.z=actual_pose.position.z+joystick_translation_step
-  if(input=="x"):
-    bool_pose_move=True
-    target_pose.position.z=actual_pose.position.z-joystick_translation_step
-  if(input=="o"):
-    bool_pose_move=True
-    target_rpy_vet[0]=actual_rpy_vet[0]+joystick_angle_step
-  if(input=="p"):
-    bool_pose_move=True
-    target_rpy_vet[0]=actual_rpy_vet[0]-joystick_angle_step
-  if(input=="k"):
-    bool_pose_move=True
-    target_rpy_vet[1]=actual_rpy_vet[1]+joystick_angle_step
-  if(input=="l"):
-    bool_pose_move=True
-    target_rpy_vet[1]=actual_rpy_vet[1]-joystick_angle_step
-  if(input=="n"):
-    bool_pose_move=True
-    target_rpy_vet[2]=actual_rpy_vet[2]+joystick_angle_step
-  if(input=="m"):
-    bool_pose_move=True
-    target_rpy_vet[2]=actual_rpy_vet[2]-joystick_angle_step
-
-  if(input>="1" and input<="6"):
-    #trasforma char in numero tramite ascii
-    num=ord(input)-ord("1")+1
-    angle_grad_step=transformation_library.rad_to_grad(joystick_angle_step)
-    movegroup_library.ruota_giunto(num-1,joystick_angle_step*joystick_verso_rotazione)
-
-  if(input=="0"):
-    joystick_verso_rotazione=(-1)*(joystick_verso_rotazione)
-
-
-
-  if bool_pose_move:
-    quaternion_target=transformation_library.from_euler_to_quaternion(target_rpy_vet)
-    target_pose.orientation=quaternion_target.orientation
-    
-    movegroup_library.go_to_pose_goal(target_pose)
-
-
-
 def define_all_initial_functions():
-    global movegroup_library,comunication_object,transformation_library,movimenti_base_library,aruco_library
-    global joystick_verso_rotazione,joystick_angle_step,joystick_translation_step,bool_message_from_user
-    global pub_move_goal
+    #\brief Here we initialize most of the variables
+    global movegroup_library,transformation_library
 
+    #Here we initialize rospy
     rospy.init_node('state_machine', anonymous=True)
-    s=rospy.Service('/move_arm',comunication,handle_move_arm_service)
-    pub_move_goal = rospy.Publisher('/move_base/goal', MoveBaseActionGoal, queue_size=1)
+    #From here we will read the location of our robot
     rospy.Subscriber('/odom',Odometry,odom_callback)
-    print("Service ready")
+    #initialize move_group_libray,transformation_library
     movegroup_library = Move_group_class()
     transformation_library=Transformation_class()
     bool_exit=False
 
-def prova():
-    nul=0
-
-    vect1=movegroup_library.get_joints_values()
-
-    vect2=movegroup_library.get_joints_values()
-
-
-    vect1[0]=transformation_library.grad_to_rad(170)
-    vect1[3]=transformation_library.grad_to_rad(-20)
-    vect2[0]=transformation_library.grad_to_rad(-170)
-    vect2[3]=transformation_library.grad_to_rad(-20)
-
-
-    movegroup_library.move_group.set_start_state_to_current_state
-    movegroup_library.go_to_joint_state(vect1)
-
-
-    movegroup_library.move_group.set_start_state_to_current_state
-    movegroup_library.go_to_joint_state(vect2)
-
-
 def odom_callback(data):
+    #\brief callback from odom topic
+    #\param data Odometry information of the robot
+
     global x_actual,y_actual
+    #Here we save x,y data of the robot
     x_actual=data.pose.pose.position.x
     y_actual=data.pose.pose.position.y
 def wait_to_reach_goal(goal):
+    #\brief This function take as input the goal we wanna reach and calculate if we have reached it. Differently it will wait.
+    #\param goal It is a MoveBaseGoal
+
+    #We extrapolate x,y goals
     x_goal=goal.target_pose.pose.position.x
     y_goal=goal.target_pose.pose.position.y
     pos_reached=False
-    while(not (pos_reached)):
-        rospy.rostime.wallsleep(0.5)
-        diff=math.sqrt((x_goal-x_actual)*(x_goal-x_actual) + (y_goal-y_actual)*(y_goal-y_actual))
-        print(diff)
-        if(diff<=0.2):
-            pos_reached=True
+
+    #We wait to reach the position
+    try:
+        while(not (pos_reached)):
+            #Thanks to this line of code we can wait to receive some odom callbacks and so updates the robot position
+            rospy.rostime.wallsleep(0.5)
+
+            #We elaborate the difference between our goal and our position provided by odom
+            diff=math.sqrt((x_goal-x_actual)*(x_goal-x_actual) + (y_goal-y_actual)*(y_goal-y_actual))
+
+            #If the position is under the threshold we exit from the loop
+            if(diff<=0.2):
+                pos_reached=True
+    except KeyboardInterrupt:
+        return
 
 def move_to_next_location():
+    #\brief From here we will force the robot to move to the next room thanks to the planner. In order to do that we will used an action
     global id_location
 
+    #initialization and waiting for the server
     client = actionlib.SimpleActionClient('move_base',MoveBaseAction)
     client.wait_for_server()
+
+    #initialization of the goal
     goal = MoveBaseGoal()
     goal.target_pose.header.frame_id = "odom"
     goal.target_pose.header.stamp = rospy.Time.now()
+    #We insert as x and y information contained in an array. id_location is related to the number of the room we wanna go
     goal.target_pose.pose.position.x = x_pos_array[id_location]
     goal.target_pose.pose.position.y = y_pos_array[id_location]
     goal.target_pose.pose.orientation.w = 1
 
+    #We call the action
     client.send_goal(goal)
+
+    #We wait to reach the goal thanks to a function I personally developed, not by using the standard one
     wait_to_reach_goal(goal)
 
-    print("complete")
+    #We update the id to the next one. In this way we are ready to go the following room
     id_location=id_location+1
-
+    print("complete")
 def look_around():
+    #\brief In this function without moving the chassis the robot will take a look around. This means it mainly rotate the first axis of at least 360 degrees.
+
+    #We save the current joint value, we update the start state and the we move to the desired location
     vect1=movegroup_library.get_joints_values()
-
-    vect2=movegroup_library.get_joints_values()
-
-
     vect1[0]=transformation_library.grad_to_rad(178)
     vect1[3]=transformation_library.grad_to_rad(-30)
-    vect2[0]=transformation_library.grad_to_rad(-178)
-    vect2[3]=transformation_library.grad_to_rad(-30)
-
-
     movegroup_library.move_group.set_start_state_to_current_state
     movegroup_library.go_to_joint_state(vect1)
 
-
+    #We save the current joint value, we update the start state and the we move to the desired location
+    vect2=movegroup_library.get_joints_values()
+    vect2[0]=transformation_library.grad_to_rad(-178)
+    vect2[3]=transformation_library.grad_to_rad(-40)
     movegroup_library.move_group.set_start_state_to_current_state
     movegroup_library.go_to_joint_state(vect2)
 
 
 def state_machine():
+    #\brief In this function we will loop until the end of the process. We will continue to look around and move
+
+    #The camera will take a look around without moving the chassis at the very beginning
     look_around()
+
+    #Foreach room we move to it and take a look around
     for i in range(0,6):
         move_to_next_location()
         look_around()
 def main():
-  define_all_initial_functions()
-  state_machine()
-  try:
-    while (not rospy.core.is_shutdown()) and (not bool_exit):
-        rospy.rostime.wallsleep(0.5)
-        #rospy.spin()
-  except rospy.ROSInterruptException:
-    return
-  except KeyboardInterrupt:
-    return
+  #\brief This is the main function
 
-  except bool_exit==True:
-      return
+  #Here we initialize some variables
+  define_all_initial_functions()
+
+  #Here we will loop until the end of the project
+  state_machine()
 if __name__ == '__main__':
   main()
