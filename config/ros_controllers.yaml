@@ -42,7 +42,7 @@ arm_controller:
     - arm_joint_04
   gains:
     arm_joint_01:
-      p: 100
+      p: 50
       d: 0
       i: 0
       i_clamp: 0

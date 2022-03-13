@@ -94,7 +94,7 @@ def check_victory(hint):
         print("----------------the winner id is:" + str(winner_id))
 
         #if the winner id is equal to the one we are analyzing and we know it is complete then we have won
-        if winner_id==hint.hypothesis_code :
+        if winner_id==hint.hypothesis_code and total_aruco_found>=30:
             print("YOU WIN")
             bool_exit=True
             rospy.set_param("/victory",True)
@@ -168,22 +168,22 @@ def callbackRaw(raw_img):
                 print(str(id_trovato)+":")
 
             #It will check if the id is inside a correct range and if it has ever been founds
-            if ids_found[id_trovato]==0 and id_trovato<10000 and id_trovato>=11 and id_trovato<=40:
+            if id_trovato<10000 and id_trovato>=11 and id_trovato<=40:
+                if ids_found[id_trovato]==0:
+                  total_aruco_found=total_aruco_found+1
 
-                total_aruco_found=total_aruco_found+1
+                  #Here we ask for the oracle hint
+                  response=client_oracle(id_trovato)
+                  print(str(id_trovato)+":")
 
-                #Here we ask for the oracle hint
-                response=client_oracle(id_trovato)
-                print(str(id_trovato)+":")
+                  #Here we save it in the global array and we will also check the victory
+                  save_hint(response)
 
-                #Here we save it in the global array and we will also check the victory
-                save_hint(response)
-
-                #Thanks to this line we will not check anymore that id
-                ids_found[id_trovato]=1
-                print("total aruco:"+str(total_aruco_found))
-                if total_aruco_found>20 :
-                  print(ids_found)
+                  #Thanks to this line we will not check anymore that id
+                  ids_found[id_trovato]=1
+                  print("total aruco:"+str(total_aruco_found))
+                  if total_aruco_found>20 :
+                    print(ids_found)
     else:
         detAruImg=cv_image.copy()#
 

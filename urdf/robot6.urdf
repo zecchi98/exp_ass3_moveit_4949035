@@ -424,7 +424,7 @@
         <visual>
             <origin rpy="0 3.1415 -1.57" xyz="-0.032 0.048 0.04" />
             <geometry>
-                <box size="0.06 0.02 0.08" />
+                <box size="0.006 0.002 0.008" />
             </geometry>
             <material name="white" />
         </visual>
@@ -453,7 +453,7 @@
         <visual>
             <origin rpy="0 3.1415 -1.57" xyz="0.06 0.048 0.04" />
             <geometry>
-                <box size="0.06 0.02 0.08" />
+                <box size="0.006 0.002 0.008" />
             </geometry>
             <material name="white" />
         </visual>
@@ -680,16 +680,16 @@
    <!-- hokuyo -->
 <gazebo reference="camera_link">
   <sensor name="rgbd" type="depth">
-    <update_rate>20</update_rate>
+    <update_rate>100</update_rate>
     <camera>
       <horizontal_fov>1.047198</horizontal_fov>
       <image>
         <width>1280</width>
-        <height>1080</height>
+        <height>1280</height>
         <format>R8G8B8</format>
       </image>
       <clip>
-        <near>0.05</near>
+        <near>0.005</near>
         <far>10</far>
       </clip>
     </camera>

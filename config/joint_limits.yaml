@@ -10,7 +10,7 @@ default_acceleration_scaling_factor: 1
 joint_limits:
   arm_joint_01:
     has_velocity_limits: true
-    max_velocity: 1
+    max_velocity: 0.2
     has_acceleration_limits: false
     max_acceleration: 1
   arm_joint_02:

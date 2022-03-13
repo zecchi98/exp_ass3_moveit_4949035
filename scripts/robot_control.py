@@ -558,7 +558,7 @@ class Move_group_class(object):
     aruco_library.print_situation_aruco()
 def define_all_initial_functions():
     #\brief Here we initialize most of the variables
-    global movegroup_library,transformation_library
+    global movegroup_library,transformation_library,head_degrees
 
     #Here we initialize rospy
     rospy.init_node('state_machine', anonymous=True)
@@ -570,6 +570,7 @@ def define_all_initial_functions():
     movegroup_library = Move_group_class()
     transformation_library=Transformation_class()
     bool_exit=False
+    head_degrees=30
 
 def odom_callback(data):
     #\brief callback from odom topic
@@ -607,6 +608,7 @@ def move_to_next_location():
     #\brief From here we will force the robot to move to the next room thanks to the planner. In order to do that we will used an action
     global id_location
 
+    print("Going to room number "+str(id_location)+" of 6")
     #initialization and waiting for the server
     client = actionlib.SimpleActionClient('move_base',MoveBaseAction)
     client.wait_for_server()
@@ -627,43 +629,42 @@ def move_to_next_location():
     wait_to_reach_goal(goal)
 
     #We update the id to the next one. In this way we are ready to go the following room
-    id_location=id_location+1
+    id_location=(id_location+1)%7
     print("I have just reached the desired location")
 def look_around():
     #\brief In this function without moving the chassis the robot will take a look around. This means it mainly rotate the first axis of at least 360 degrees.
-
+    
     #We save the current joint value, we update the start state and the we move to the desired location
     vect1=movegroup_library.get_joints_values()
     vect1[0]=transformation_library.grad_to_rad(178)
-    vect1[3]=transformation_library.grad_to_rad(-30)
+    vect1[3]=transformation_library.grad_to_rad(-head_degrees)
     movegroup_library.move_group.set_start_state_to_current_state
     movegroup_library.go_to_joint_state(vect1)
 
     #We save the current joint value, we update the start state and the we move to the desired location
     vect2=movegroup_library.get_joints_values()
     vect2[0]=transformation_library.grad_to_rad(-178)
-    vect2[3]=transformation_library.grad_to_rad(-40)
+    vect2[3]=transformation_library.grad_to_rad(-(head_degrees+10))
     movegroup_library.move_group.set_start_state_to_current_state
     movegroup_library.go_to_joint_state(vect2)
 
 
 def state_machine():
     #\brief In this function we will loop until the end of the process. We will continue to look around and move
-    global victory
+    global victory,head_degrees
     #The camera will take a look around without moving the chassis at the very beginning
     look_around()
     victory=False
     while(not(victory)):
       #Foreach room we move to it and take a look around
-      for i in range(0,7):
-          if not victory:
-            print("Going to room number "+str(i+1)+" of 7")
-            move_to_next_location()
+      if not victory:
+        move_to_next_location()
           
-          victory = rospy.get_param("/victory")
-          if(not victory):
-            look_around()
-          victory = rospy.get_param("/victory")
+      victory = rospy.get_param("/victory")
+      if(not victory):
+        look_around()
+        victory = rospy.get_param("/victory")
+      head_degrees=(head_degrees+20) % 70 
     print("You WIN")
       
 def main():
