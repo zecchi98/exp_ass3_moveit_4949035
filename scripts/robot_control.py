@@ -603,6 +603,15 @@ def wait_to_reach_goal(goal):
                 pos_reached=True
     except KeyboardInterrupt:
         return
+def arm_up():
+
+    #We save the current joint value, we update the start state and the we move to the desired location
+    vect1=movegroup_library.get_joints_values()
+    vect1[1]=transformation_library.grad_to_rad(0)
+    vect1[2]=transformation_library.grad_to_rad(0)
+    vect1[3]=transformation_library.grad_to_rad(-head_degrees)
+    movegroup_library.move_group.set_start_state_to_current_state
+    movegroup_library.go_to_joint_state(vect1)
 
 def move_to_next_location():
     #\brief From here we will force the robot to move to the next room thanks to the planner. In order to do that we will used an action
@@ -637,17 +646,177 @@ def look_around():
     #We save the current joint value, we update the start state and the we move to the desired location
     vect1=movegroup_library.get_joints_values()
     vect1[0]=transformation_library.grad_to_rad(178)
-    vect1[3]=transformation_library.grad_to_rad(-head_degrees)
+    vect1[3]=transformation_library.grad_to_rad(-20)
     movegroup_library.move_group.set_start_state_to_current_state
     movegroup_library.go_to_joint_state(vect1)
 
     #We save the current joint value, we update the start state and the we move to the desired location
     vect2=movegroup_library.get_joints_values()
     vect2[0]=transformation_library.grad_to_rad(-178)
-    vect2[3]=transformation_library.grad_to_rad(-(head_degrees+10))
+    vect2[3]=transformation_library.grad_to_rad(-(20+10))
     movegroup_library.move_group.set_start_state_to_current_state
     movegroup_library.go_to_joint_state(vect2)
 
+def fix_aruco19():
+    #initialization and waiting for the server
+    client = actionlib.SimpleActionClient('move_base',MoveBaseAction)
+    client.wait_for_server()
+
+    #initialization of the goal
+    goal = MoveBaseGoal()
+    goal.target_pose.header.frame_id = "odom"
+    goal.target_pose.header.stamp = rospy.Time.now()
+    #We insert as x and y information contained in an array. id_location is related to the number of the room we wanna go
+    goal.target_pose.pose.position.x = 4.467
+    goal.target_pose.pose.position.y = -6.77
+    goal.target_pose.pose.orientation.w = 1
+
+    #We call the action
+    client.send_goal(goal)
+
+    #We wait to reach the goal thanks to a function I personally developed, not by using the standard one
+    wait_to_reach_goal(goal)
+
+    print("I have just reached the desired location")
+
+    #We save the current joint value, we update the start state and the we move to the desired location
+    vect1=movegroup_library.get_joints_values()
+    vect1[0]=transformation_library.grad_to_rad(178)
+    vect1[1]=transformation_library.grad_to_rad(-103)
+    vect1[2]=transformation_library.grad_to_rad(13)
+    vect1[3]=transformation_library.grad_to_rad(85)
+    movegroup_library.move_group.set_start_state_to_current_state
+    movegroup_library.go_to_joint_state(vect1)
+
+    #We save the current joint value, we update the start state and the we move to the desired location
+    vect2=movegroup_library.get_joints_values()
+    vect2[0]=transformation_library.grad_to_rad(-178)
+    vect2[1]=transformation_library.grad_to_rad(-103)
+    vect2[2]=transformation_library.grad_to_rad(13)
+    vect2[3]=transformation_library.grad_to_rad(85)
+    movegroup_library.move_group.set_start_state_to_current_state
+    movegroup_library.go_to_joint_state(vect2)
+
+    arm_up()
+def fix_aruco33():
+    #initialization and waiting for the server
+    client = actionlib.SimpleActionClient('move_base',MoveBaseAction)
+    client.wait_for_server()
+
+    #initialization of the goal
+    goal = MoveBaseGoal()
+    goal.target_pose.header.frame_id = "odom"
+    goal.target_pose.header.stamp = rospy.Time.now()
+    #We insert as x and y information contained in an array. id_location is related to the number of the room we wanna go
+    goal.target_pose.pose.position.x = 5.5
+    goal.target_pose.pose.position.y = -0.7
+    goal.target_pose.pose.orientation.w = 1
+
+    #We call the action
+    client.send_goal(goal)
+
+    #We wait to reach the goal thanks to a function I personally developed, not by using the standard one
+    wait_to_reach_goal(goal)
+
+    print("I have just reached the desired location")
+
+    #We save the current joint value, we update the start state and the we move to the desired location
+    vect1=movegroup_library.get_joints_values()
+    vect1[0]=transformation_library.grad_to_rad(178)
+    vect1[1]=transformation_library.grad_to_rad(0)
+    vect1[2]=transformation_library.grad_to_rad(0)
+    vect1[3]=transformation_library.grad_to_rad(-27)
+    movegroup_library.move_group.set_start_state_to_current_state
+    movegroup_library.go_to_joint_state(vect1)
+
+    #We save the current joint value, we update the start state and the we move to the desired location
+    vect2=movegroup_library.get_joints_values()
+    vect2[0]=transformation_library.grad_to_rad(-178)
+    vect2[1]=transformation_library.grad_to_rad(0)
+    vect2[2]=transformation_library.grad_to_rad(0)
+    vect2[3]=transformation_library.grad_to_rad(-27)
+    movegroup_library.move_group.set_start_state_to_current_state
+    movegroup_library.go_to_joint_state(vect2)
+
+
+    arm_up()
+def fix_aruco37():
+    #initialization and waiting for the server
+    client = actionlib.SimpleActionClient('move_base',MoveBaseAction)
+    client.wait_for_server()
+
+    #initialization of the goal
+    goal = MoveBaseGoal()
+    goal.target_pose.header.frame_id = "odom"
+    goal.target_pose.header.stamp = rospy.Time.now()
+    #We insert as x and y information contained in an array. id_location is related to the number of the room we wanna go
+    goal.target_pose.pose.position.x = -0.89
+    goal.target_pose.pose.position.y = 4.7
+    goal.target_pose.pose.orientation.w = 1
+
+    #We call the action
+    client.send_goal(goal)
+
+    #We wait to reach the goal thanks to a function I personally developed, not by using the standard one
+    wait_to_reach_goal(goal)
+
+    print("I have just reached the desired location")
+
+    #We save the current joint value, we update the start state and the we move to the desired location
+    vect1=movegroup_library.get_joints_values()
+    vect1[0]=transformation_library.grad_to_rad(178)
+    vect1[1]=transformation_library.grad_to_rad(0)
+    vect1[2]=transformation_library.grad_to_rad(0)
+    vect1[3]=transformation_library.grad_to_rad(-27)
+    movegroup_library.move_group.set_start_state_to_current_state
+    movegroup_library.go_to_joint_state(vect1)
+
+    #We save the current joint value, we update the start state and the we move to the desired location
+    vect2=movegroup_library.get_joints_values()
+    vect2[0]=transformation_library.grad_to_rad(-178)
+    vect2[1]=transformation_library.grad_to_rad(0)
+    vect2[2]=transformation_library.grad_to_rad(0)
+    vect2[3]=transformation_library.grad_to_rad(-27)
+    movegroup_library.move_group.set_start_state_to_current_state
+    movegroup_library.go_to_joint_state(vect2)
+    arm_up()
+def fix_aruco16():
+    #initialization and waiting for the server
+    client = actionlib.SimpleActionClient('move_base',MoveBaseAction)
+    client.wait_for_server()
+
+    #initialization of the goal
+    goal = MoveBaseGoal()
+    goal.target_pose.header.frame_id = "odom"
+    goal.target_pose.header.stamp = rospy.Time.now()
+    #We insert as x and y information contained in an array. id_location is related to the number of the room we wanna go
+    goal.target_pose.pose.position.x = 0.55
+    goal.target_pose.pose.position.y = -7.8
+    goal.target_pose.pose.orientation.w = 1
+
+    #We call the action
+    client.send_goal(goal)
+
+    #We wait to reach the goal thanks to a function I personally developed, not by using the standard one
+    wait_to_reach_goal(goal)
+
+    print("I have just reached the desired location")
+
+    #We save the current joint value, we update the start state and the we move to the desired location
+    vect1=movegroup_library.get_joints_values()
+    vect1[0]=transformation_library.grad_to_rad(178)
+    vect1[3]=transformation_library.grad_to_rad(-27)
+    movegroup_library.move_group.set_start_state_to_current_state
+    movegroup_library.go_to_joint_state(vect1)
+
+    #We save the current joint value, we update the start state and the we move to the desired location
+    vect2=movegroup_library.get_joints_values()
+    vect2[0]=transformation_library.grad_to_rad(-178)
+    vect2[3]=transformation_library.grad_to_rad(-27)
+    movegroup_library.move_group.set_start_state_to_current_state
+    movegroup_library.go_to_joint_state(vect2)
+    arm_up()
+       
 
 def state_machine():
     #\brief In this function we will loop until the end of the process. We will continue to look around and move
@@ -664,7 +833,13 @@ def state_machine():
       if(not victory):
         look_around()
         victory = rospy.get_param("/victory")
-      head_degrees=(head_degrees+20) % 70 
+
+      if( id_location==0):
+        head_degrees=(head_degrees+20) % 70
+        fix_aruco19()
+        fix_aruco16()
+        fix_aruco33()
+        fix_aruco37()
     print("You WIN")
       
 def main():
@@ -672,7 +847,6 @@ def main():
 
   #Here we initialize some variables
   define_all_initial_functions()
-
   #Here we will loop until the end of the project
   state_machine()
 if __name__ == '__main__':
