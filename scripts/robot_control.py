@@ -643,20 +643,22 @@ def move_to_next_location():
 def look_around():
     #\brief In this function without moving the chassis the robot will take a look around. This means it mainly rotate the first axis of at least 360 degrees.
     
+    print("looking around")
     #We save the current joint value, we update the start state and the we move to the desired location
     vect1=movegroup_library.get_joints_values()
     vect1[0]=transformation_library.grad_to_rad(178)
     vect1[3]=transformation_library.grad_to_rad(-20)
     movegroup_library.move_group.set_start_state_to_current_state
     movegroup_library.go_to_joint_state(vect1)
-
+    print("first look complete, proceeding to second one")
+    
     #We save the current joint value, we update the start state and the we move to the desired location
     vect2=movegroup_library.get_joints_values()
     vect2[0]=transformation_library.grad_to_rad(-178)
     vect2[3]=transformation_library.grad_to_rad(-(20+10))
     movegroup_library.move_group.set_start_state_to_current_state
     movegroup_library.go_to_joint_state(vect2)
-
+    print("Finish to look around")
 def fix_aruco19():
     #initialization and waiting for the server
     client = actionlib.SimpleActionClient('move_base',MoveBaseAction)

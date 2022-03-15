@@ -94,7 +94,7 @@ def check_victory(hint):
         print("----------------the winner id is:" + str(winner_id))
 
         #if the winner id is equal to the one we are analyzing and we know it is complete then we have won
-        if winner_id==hint.hypothesis_code:
+        if winner_id==hint.hypothesis_code and total_aruco_found>=30:
             print("YOU WIN")
             bool_exit=True
             rospy.set_param("/victory",True)
