@@ -27,3 +27,6 @@ Python
 
 #Missing points:
 global ros variable to comunicate after victory to close all windows
+
+install ros-noetic-moveit
+put inside .gazeboi all you need
