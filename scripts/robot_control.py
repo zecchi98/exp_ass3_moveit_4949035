@@ -1,6 +1,25 @@
 #!/usr/bin/env python
 #fold all: ctrl + k + 0
 #unfold all: ctrl + k + j
+
+## @package exp_ass3_moveit_4949035
+# \file robot_control.py
+# \brief This file will let the arm and the robot move. It will let the robot look around using the arm, and then change room
+# \author Federico Zecchi
+# \version 0.1
+# \date 22/03/22
+#
+# \details
+#
+# Subscribes to: <BR>
+# [/odom][/camera/color/image_raw]
+#
+# Publishes to: <BR>
+# [None]
+#
+# Client : <BR>
+# [None]
+#
 import copy
 import math
 import sys
@@ -27,9 +46,9 @@ from nav_msgs.msg import Odometry
 x_pos_array=[0,-4,-4,-4,5,5,5]
 y_pos_array=[0,-3,7,2,-7,-3,1]
 id_location=0
-flagMiddlePanelCreated=False
 bool_exit=False
-class Transformation_class():##
+class Transformation_class():
+##
 #\class Transformation_class
 #\brief Only the grad_to_rad function has been used in this assignment
   def __init__(self):
@@ -149,7 +168,8 @@ class Transformation_class():##
   def inverse_matrix(self,AffineMat):
     return np.linalg.inv(AffineMat)
 class Move_group_class(object):
-  #\class Transformation_class
+  ##
+  #\class Move_group_class
   #\brief This function has been provided from moveit, i didn't modify it. Except inserting the name of the robot
   """Move_group_class"""
   def __init__(self):
@@ -556,23 +576,9 @@ class Move_group_class(object):
     print("\n\nActive joints:")
     print(self.move_group.get_active_joints())
     aruco_library.print_situation_aruco()
-def define_all_initial_functions():
-    #\brief Here we initialize most of the variables
-    global movegroup_library,transformation_library,head_degrees
-
-    #Here we initialize rospy
-    rospy.init_node('state_machine', anonymous=True)
-    #From here we will read the location of our robot
-    rospy.Subscriber('/odom',Odometry,odom_callback)
-    #Initialize victory rosparam
-    rospy.set_param("/victory",False)
-    #initialize move_group_libray,transformation_library
-    movegroup_library = Move_group_class()
-    transformation_library=Transformation_class()
-    bool_exit=False
-    head_degrees=30
 
 def odom_callback(data):
+    ##
     #\brief callback from odom topic
     #\param data Odometry information of the robot
 
@@ -581,6 +587,7 @@ def odom_callback(data):
     x_actual=data.pose.pose.position.x
     y_actual=data.pose.pose.position.y
 def wait_to_reach_goal(goal):
+    ##
     #\brief This function take as input the goal we wanna reach and calculate if we have reached it. Differently it will wait.
     #\param goal It is a MoveBaseGoal
 
@@ -604,8 +611,8 @@ def wait_to_reach_goal(goal):
     except KeyboardInterrupt:
         return
 def arm_up():
-
-    #We save the current joint value, we update the start state and the we move to the desired location
+    ##
+    #\brief With this function we will set the arm to be extended
     vect1=movegroup_library.get_joints_values()
     vect1[1]=transformation_library.grad_to_rad(0)
     vect1[2]=transformation_library.grad_to_rad(0)
@@ -614,6 +621,7 @@ def arm_up():
     movegroup_library.go_to_joint_state(vect1)
 
 def move_to_next_location():
+    ##
     #\brief From here we will force the robot to move to the next room thanks to the planner. In order to do that we will used an action
     global id_location
 
@@ -641,6 +649,7 @@ def move_to_next_location():
     id_location=(id_location+1)%7
     print("I have just reached the desired location")
 def look_around():
+    ##
     #\brief In this function without moving the chassis the robot will take a look around. This means it mainly rotate the first axis of at least 360 degrees.
     
     print("looking around")
@@ -660,6 +669,9 @@ def look_around():
     movegroup_library.go_to_joint_state(vect2)
     print("Finish to look around")
 def fix_aruco19():
+    ##
+    #This function will move the robo in front of the aruco 19
+
     #initialization and waiting for the server
     client = actionlib.SimpleActionClient('move_base',MoveBaseAction)
     client.wait_for_server()
@@ -668,7 +680,7 @@ def fix_aruco19():
     goal = MoveBaseGoal()
     goal.target_pose.header.frame_id = "odom"
     goal.target_pose.header.stamp = rospy.Time.now()
-    #We insert as x and y information contained in an array. id_location is related to the number of the room we wanna go
+    
     goal.target_pose.pose.position.x = 4.467
     goal.target_pose.pose.position.y = -6.77
     goal.target_pose.pose.orientation.w = 1
@@ -699,9 +711,12 @@ def fix_aruco19():
     movegroup_library.move_group.set_start_state_to_current_state
     movegroup_library.go_to_joint_state(vect2)
 
+    #We extend the arm
     arm_up()
 def fix_aruco33():
-    #initialization and waiting for the server
+    ##
+    #This function will move the robo in front of the aruco 33
+
     client = actionlib.SimpleActionClient('move_base',MoveBaseAction)
     client.wait_for_server()
 
@@ -709,7 +724,7 @@ def fix_aruco33():
     goal = MoveBaseGoal()
     goal.target_pose.header.frame_id = "odom"
     goal.target_pose.header.stamp = rospy.Time.now()
-    #We insert as x and y information contained in an array. id_location is related to the number of the room we wanna go
+    
     goal.target_pose.pose.position.x = 5.5
     goal.target_pose.pose.position.y = -0.7
     goal.target_pose.pose.orientation.w = 1
@@ -741,9 +756,11 @@ def fix_aruco33():
     movegroup_library.go_to_joint_state(vect2)
 
 
+    #We extend the arm
     arm_up()
 def fix_aruco37():
-    #initialization and waiting for the server
+    ##
+    #This function will move the robo in front of the aruco 37
     client = actionlib.SimpleActionClient('move_base',MoveBaseAction)
     client.wait_for_server()
 
@@ -751,7 +768,7 @@ def fix_aruco37():
     goal = MoveBaseGoal()
     goal.target_pose.header.frame_id = "odom"
     goal.target_pose.header.stamp = rospy.Time.now()
-    #We insert as x and y information contained in an array. id_location is related to the number of the room we wanna go
+
     goal.target_pose.pose.position.x = -0.89
     goal.target_pose.pose.position.y = 4.7
     goal.target_pose.pose.orientation.w = 1
@@ -781,8 +798,14 @@ def fix_aruco37():
     vect2[3]=transformation_library.grad_to_rad(-27)
     movegroup_library.move_group.set_start_state_to_current_state
     movegroup_library.go_to_joint_state(vect2)
+
+
+    #We extend the arm
     arm_up()
 def fix_aruco16():
+    ##
+    #This function will move the robot in front of the aruco 16
+
     #initialization and waiting for the server
     client = actionlib.SimpleActionClient('move_base',MoveBaseAction)
     client.wait_for_server()
@@ -791,7 +814,7 @@ def fix_aruco16():
     goal = MoveBaseGoal()
     goal.target_pose.header.frame_id = "odom"
     goal.target_pose.header.stamp = rospy.Time.now()
-    #We insert as x and y information contained in an array. id_location is related to the number of the room we wanna go
+    
     goal.target_pose.pose.position.x = 0.55
     goal.target_pose.pose.position.y = -7.8
     goal.target_pose.pose.orientation.w = 1
@@ -817,11 +840,14 @@ def fix_aruco16():
     vect2[3]=transformation_library.grad_to_rad(-27)
     movegroup_library.move_group.set_start_state_to_current_state
     movegroup_library.go_to_joint_state(vect2)
+    
+    #We extend the arm
     arm_up()
        
 
 def state_machine():
-    #\brief In this function we will loop until the end of the process. We will continue to look around and move
+    ##
+    #\brief In this function we will loop until the end of the process. We will continue to look around and move to the next room
     global victory,head_degrees
     #The camera will take a look around without moving the chassis at the very beginning
     look_around()
@@ -843,8 +869,25 @@ def state_machine():
         fix_aruco33()
         fix_aruco37()
     print("You WIN")
+def define_all_initial_functions():
+    ##
+    #\brief Here we initialize most of the variables
+    global movegroup_library,transformation_library,head_degrees
+
+    #Here we initialize rospy
+    rospy.init_node('state_machine', anonymous=True)
+    #From here we will read the location of our robot
+    rospy.Subscriber('/odom',Odometry,odom_callback)
+    #Initialize victory as False
+    rospy.set_param("/victory",False)
+    #initialize move_group_libray,transformation_library
+    movegroup_library = Move_group_class()
+    transformation_library=Transformation_class()
+    bool_exit=False
+    head_degrees=30
       
 def main():
+  ##
   #\brief This is the main function
 
   #Here we initialize some variables

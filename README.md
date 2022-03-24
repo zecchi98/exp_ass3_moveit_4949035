@@ -2,31 +2,33 @@
 
 
 # How to build the package?
-- The package need to be inside a package with armor already installed and ready to be used.
-- Clone this package into the src folder of the ros_ws
-- catkin_make the workspace
-- Go inside this package and execute the script "update_library.sh" by ./update_library.sh
+-   exp_assignment3 and erl2 should be installed
+-   if some moveit package are missing when you will run the code then you should: sudo apt update     and    sudo apt install ros-noetic-moveit    
+-   You should put all the aruco models inside exp_assignment3/models into .gazebo/models folder
+-   catkin_make
 
-# Is the owl file in the right position?
-The package has been mainly built to work in the docker container workspace. This package need to be installed in the ros_ws workspace. Otherwise it will not work.
-If you are running this package outside of that folder you will need to change manually the code. In particular, go to "my_library" folder and to the library.ph file.
-Then go to the Armor_Communication class and to the load_file method.
-Find the line: "req.args= ['/root/ros_ws/src/exp_robotics_ass1_4949035/cluedo_ontology.owl', 'http://www.emarolab.it/cluedo-ontology', 'true', 'PELLET', 'true']"
-Modify the first argument of this square brackets, by inserting your path to the cluedo file.
-After saving this modification you will have to buil the library.
-In the main folder execute the script "update_library.sh" by ./update_library.sh
 
 # How to run the code?
-- First tab: roscore
-- Second tab: rosrun armor execute it.emarolab.armor.ARMORMainService
-- Third tab: roslaunch exp_robotics_ass1_4949035 launcher.launch
+- First tab: roslaunch exp_ass3_moveit_4949035 my_launch_file_moveit.launch
+- Second tab: rosrun exp_ass3_moveit_4949035 my_opencv.py
+- Third tab: rosrun exp_ass3_moveit_4949035 robot_control.py
 
 
-# In which language is the project written?
-Python
+# What my_launch_file_moveit.launch is used for?
+It will start the all simulation and the final_assignment node.
 
-#Missing points:
-global ros variable to comunicate after victory to close all windows
 
-install ros-noetic-moveit
-put inside .gazeboi all you need
+# What my_opencv.py is used for?
+1) It keep tracks of camera_image data to understand if a new aruco has been found.
+2) It saves all the aruco inside a particular list
+3) It checks if an hint has been completed and check if it is the winner one
+4) It uses the rosparam server to comunicate the victory
+
+
+# What robot_control.py is used for?
+During the all execution of the program if the system get a victory comunication then the program will be completed
+1) It will look around using the robot arm to check the aruco in the room
+2) It will make the robot go the next room
+3) It will continue to execute point 1) and 2) until all the rooms have been completed
+4) It will try to fix some arucos
+5) It will repeat the all process until all the aruco needed have been found.

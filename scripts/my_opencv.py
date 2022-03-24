@@ -1,5 +1,22 @@
 #!/usr/bin/env python
-
+## @package exp_ass3_moveit_4949035
+# \file my_opencv.py
+# \brief This file will identify aruco from camera, save the hints, check if you have win
+# \author Federico Zecchi
+# \version 0.1
+# \date 22/03/22
+#
+# \details
+#
+# Subscribes to: <BR>
+# [/camera/color/camera_info][/camera/color/image_raw]
+#
+# Publishes to: <BR>
+# [None]
+#
+# Client : <BR>
+# [/oracle_hint][/oracle_solution]
+#
 import rospy
 import numpy as np
 
@@ -19,7 +36,6 @@ def loadCameraParam(myCam):
     ##
     #\brief this function will load camera parameters
     #@param myCam Topic of the camera
-    #@return No return
     global cameraMatr,cameraDistCoefs,cameraFocLen
     global cameraDistCoefs
     global cameraFocLen
@@ -41,7 +57,6 @@ class hypothesis_general():
         self.places=[]
         self.weapons=[]
         self.hypothesis_code="HP-1"
-
     def print_data(self):
         ##
         #\brief print data function
@@ -54,20 +69,30 @@ class hypothesis_general():
         print("weapons:")
         print(self.weapons)
     def add_person(self,person):
+        ##
+        #\brief add_person function
       if len(self.people)==0:
         self.people.append(person)
     def add_weapon(self,weapon):
+        ##
+        #\brief add_weapon function
       if len(self.weapons)==0:
         self.weapons.append(weapon)
     def add_place(self,place):
+        ##
+        #\brief add_place function
       if len(self.places)==0:
         self.places.append(place)
     def check_complete_and_consistent(self):
+        ##
+        #\brief check if the hypothesis is complete
       if len(self.weapons)==1 and len(self.people)==1 and len(self.places)==1:
         return True
       else:
         return False
     def set_hypo_code(self,hypo_code):
+        ##
+        #\brief set_hypo_code
       self.hypothesis_code=hypo_code
 def check_victory(hint):
     ##
@@ -94,7 +119,7 @@ def check_victory(hint):
         print("----------------the winner id is:" + str(winner_id))
 
         #if the winner id is equal to the one we are analyzing and we know it is complete then we have won
-        if winner_id==hint.hypothesis_code and total_aruco_found>=30:
+        if winner_id==hint.hypothesis_code:
             print("YOU WIN")
             bool_exit=True
             rospy.set_param("/victory",True)
@@ -218,10 +243,6 @@ def main():
     ARUCO_PARAMETERS = aruco.DetectorParameters_create()
     ARUCO_DICT = aruco.Dictionary_get(aruco.DICT_ARUCO_ORIGINAL)
 
-
-    #print('connecting to:'+myCamera+'...')
-    #loadCameraParam(myCamera)
-    #print('ready')
 
     # We initialize an array of 6 values
     hypothesis=[]
