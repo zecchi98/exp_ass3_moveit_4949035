@@ -1,0 +1,37 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${workspaceFolder}/.vscode/browse.vc.db",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/zecchi98/tesi_ws/devel/include/**",
+        "/home/zecchi98/unige/final_assignment/devel/include/**",
+        "/home/zecchi98/unige/ass3/devel/include/**",
+        "/opt/ros/noetic/include/**",
+        "/home/zecchi98/unige/final_assignment/src/vision_opencv/cv_bridge/include/**",
+        "/home/zecchi98/unige/ass3/src/exp_ass2_moveit_4949035/include/**",
+        "/home/zecchi98/unige/final_assignment/src/SLAM_packages/hector_slam/hector_map_tools/include/**",
+        "/home/zecchi98/unige/final_assignment/src/SLAM_packages/hector_slam/hector_mapping/include/**",
+        "/home/zecchi98/unige/final_assignment/src/SLAM_packages/hector_slam/hector_marker_drawing/include/**",
+        "/home/zecchi98/unige/final_assignment/src/vision_opencv/image_geometry/include/**",
+        "/home/zecchi98/unige/ass3/src/occupancy_grid_utils/include/**",
+        "/home/zecchi98/unige/final_assignment/src/SLAM_packages/octomap_ros/include/**",
+        "/home/zecchi98/unige/final_assignment/src/SLAM_packages/octomap_mapping/octomap_server/include/**",
+        "/home/zecchi98/unige/ass3/src/rosplan_demos/rosplan_demos_interfaces/rosplan_interface_mapping/include/**",
+        "/home/zecchi98/unige/ass3/src/rosplan_demos/rosplan_demos_interfaces/rosplan_interface_movebase/include/**",
+        "/home/zecchi98/unige/ass3/src/ROSPlan/rosplan_knowledge_base/include/**",
+        "/home/zecchi98/unige/ass3/src/ROSPlan/rosplan_planning_system/include/**",
+        "/home/zecchi98/tesi_ws/src/universal_robot/ur_kinematics/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}
