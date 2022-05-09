@@ -250,6 +250,7 @@ def main():
       hypothesis.append(hypothesis_general())
     #Thanks to spin we will wait callbacks
     try:
+        print("Ready to start reading")
         rospy.spin()
     except KeyboardInterrupt:#
         print('Closing')
