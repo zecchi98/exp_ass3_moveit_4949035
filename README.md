@@ -49,9 +49,11 @@ Move base creates automatically an action server where you can comunicate your g
 "/oracle_solution": this topic is used for a service client comunication. In particular from the "my_opencv" node i can get check which one is the winner id.
 
 # State diagram
+![state_diagram](https://user-images.githubusercontent.com/78590047/167359843-8cf1058e-fe37-4062-99a4-dd46e17313c7.png)
 As shown in the diagram the robot will continue to look around and change the room to find new arucos. It will continue to repeat this until it has found all the arucos.
 
 # Software architecture
+![software_architecture](https://user-images.githubusercontent.com/78590047/167359808-2939db8f-28d4-4348-a802-129d8917c8d5.png)
 Robot control node will force the robot to move to a new room or to look around. In the meanwhile my_opencv will continue to read image from the sensImg topic, in this way they are pretty much separeted. Once the my_opencv node find the winner solution it will comunicate the victory in the "/victory" topic.
 
 # Cosa manca da aggiungere? DA ELIMINARE
