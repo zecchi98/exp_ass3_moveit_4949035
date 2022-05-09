@@ -575,7 +575,6 @@ class Move_group_class(object):
     print(rpy)
     print("\n\nActive joints:")
     print(self.move_group.get_active_joints())
-    aruco_library.print_situation_aruco()
 
 def odom_callback(data):
     ##
