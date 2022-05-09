@@ -212,7 +212,7 @@ def callbackRaw(raw_img):
     else:
         detAruImg=cv_image.copy()#
 
-    cv.imshow('detected markers',detAruImg)
+    #cv.imshow('detected markers',detAruImg)
     key = cv.waitKey(12) & 0xFF
 
 
