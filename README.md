@@ -56,6 +56,8 @@ As shown in the diagram the robot will continue to look around and change the ro
 ![software_architecture](https://user-images.githubusercontent.com/78590047/167359808-2939db8f-28d4-4348-a802-129d8917c8d5.png)
 Robot control node will force the robot to move to a new room or to look around. In the meanwhile my_opencv will continue to read image from the sensImg topic, in this way they are pretty much separeted. Once the my_opencv node find the winner solution it will comunicate the victory in the "/victory" topic.
 
-# Cosa manca da aggiungere? DA ELIMINARE
-- spiegare cosa installare
 
+
+# Video example
+
+You can find a video example in the Video Example folder, you will find it compressed.
